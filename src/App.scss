@@ -1,0 +1,122 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+  .btn-container {
+    display: flex;
+
+    .btn {
+      text-decoration: none;
+      font-weight: bold;
+      margin: 1rem;
+      padding: 0.5rem;
+      background-color: #b4b6c2;
+      border: 0;
+      border-radius: 0.2rem;
+      position: relative;
+      top: 0;
+      transition: all 0.5s ease;
+      box-shadow: 0 0.3em #7b7d86;
+      cursor: pointer;
+      text-align: center;
+      width: 100px;
+  
+      &:active {
+        top: 0.6em;
+        box-shadow: 0 0 rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+
+  .tile-container {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-gap: 15px;
+    width: 445px;
+    height: 445px;
+    background-color: #b4b6c2;
+    border: 15px solid #b4b6c2;
+    border-radius: 5px;
+    
+    .tile {
+      background-color: rgba(255, 255, 255, 0.35);
+      width: 100px;
+      height: 100px;
+      font-size: 55px;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 5px;
+    }
+    
+    .tile-2 {
+      color: white;
+      background-color: grey;
+    }
+    
+    .tile-4 {
+      background-color: turquoise;
+    }
+    
+    .tile-8 {
+      color: white;
+      background-color: brown;
+    }
+    
+    .tile-16 {
+      background-color: magenta;
+    }
+    
+    .tile-32 {
+      background-color: yellow;
+    }
+    
+    .tile-64 {
+      background-color: cyan;
+    }
+    
+    .tile-128 {
+      background-color: green;
+    }
+    
+    .tile-256 {
+      background-color: orange;
+    }
+    
+    .tile-512 {
+      background-color: lime;
+    }
+    
+    .tile-1024 {
+      background-color: navy;
+    }
+    
+    .tile-2048 {
+      background-color: pink;
+    }
+  }
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
