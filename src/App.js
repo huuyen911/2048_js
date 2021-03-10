@@ -1,28 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.scss';
 
-function useEventListener(eventName, handler, element = window){
-  const savedHandler = useRef();
-
-  useEffect(() => {
-    savedHandler.current = handler;
-  }, [handler]);
-
-  useEffect(() => {
-      const isSupported = element && element.addEventListener;
-      if (!isSupported) return;
-      const eventListener = event => savedHandler.current(event);
-      element.addEventListener(eventName, eventListener);
-      return () => {
-        element.removeEventListener(eventName, eventListener);
-      };
-    },
-    [eventName, element] // Re-run if eventName or element changes
-  );
-};
-
 function App() {
-
   const tilesDefault = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -69,7 +48,7 @@ function App() {
   };
 
   const randomTile = (listTiles = tiles) => {
-    const tilesEmpty = getTilesEmpty();
+    const tilesEmpty = getTilesEmpty(listTiles);
     const newNumber = Math.random() > 0.9 && tilesEmpty.length !== 16 ? 4 : 2;
     const newTile = tilesEmpty[Math.floor(Math.random() * tilesEmpty.length)];
     let newTiles = [...listTiles];
@@ -77,9 +56,9 @@ function App() {
     setTiles(newTiles);
   };
 
-  const getTilesEmpty = () => {
+  const getTilesEmpty = (listTiles) => {
     const tilesEmpty = [];
-    tiles?.map((row, indexRow) => {
+    listTiles?.map((row, indexRow) => {
       row?.map((tile, indexTile) => {
         if (tile === 0) {
           tilesEmpty.push({ row: indexRow, tile: indexTile });
@@ -93,22 +72,26 @@ function App() {
 
   const merge = (arr, reverse = false) => {
     let newArr = arr.filter(item => item !== 0);
-    let preTile = -1;
+    let _newArr = [];
+    let canMerged = true;
+
     if (reverse) {
       newArr = newArr.reverse();
     }
-    newArr.map((row, index) => {
-      if (preTile >= 0 && newArr[preTile] === row) {
-        newArr[preTile] *= 2;
-        newArr[index] = 0;
-        preTile = -1;
-        return null;
+
+    newArr.map((tile, index) => {
+      if (canMerged && (index + 1 <= newArr.length - 1) &&(newArr[index] === newArr[index + 1] || newArr[index] === 0 || newArr[index + 1] === 0)) {
+        _newArr[index] = newArr[index] + newArr[index + 1];
+        newArr[index + 1] = 0;
+        canMerged = false;
+      } else {
+        _newArr[index] = newArr[index];
+        canMerged = true;
       }
-      preTile = index;
       return null;
     });
 
-    newArr = newArr.filter(item => item !== 0);
+    newArr = _newArr.filter(item => item !== 0);
     newArr[0] = newArr[0] ? newArr[0] : 0;
     newArr[1] = newArr[1] ? newArr[1] : 0;
     newArr[2] = newArr[2] ? newArr[2] : 0;
@@ -123,7 +106,7 @@ function App() {
 
   const moveUp = () => {
     let newTiles = [...tiles];
-    
+
     let col0 = merge([newTiles[0][0], newTiles[1][0], newTiles[2][0], newTiles[3][0]]);
     let col1 = merge([newTiles[0][1], newTiles[1][1], newTiles[2][1], newTiles[3][1]]);
     let col2 = merge([newTiles[0][2], newTiles[1][2], newTiles[2][2], newTiles[3][2]]);
