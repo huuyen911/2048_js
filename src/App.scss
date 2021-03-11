@@ -1,16 +1,78 @@
 .app {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  
-  .btn-container {
+
+  .win,
+  .lose {
+    position: absolute;
+    top: -14px;
+    left: -14px;
+    width: 473px;
+    height: 473px;
+    background-color: #b4b6c2;
+    opacity: 0.8;
+    border: 0;
+    border-radius: 0.2rem;
+    justify-content: center;
+    align-items: center;
+    font-size: 100px;
+    font-weight: bold;
+    display: none;
+  }
+
+  .end-game {
+    display: flex !important;
+  }
+
+  .description {
+    margin-top: 20px;
+    width: 470px;
+    text-align: justify;
+    font-size: 20px;
+  }
+
+  .name {
+    width: 470px;
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .name-game {
+      font-size: 80px;
+      font-weight: bold;
+    }
+
+    .score {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-weight: bold;
+      background-color: #b4b6c2;
+      min-width: 100px;
+      border-radius: 5px;
+      padding: 0 10px;
+
+      > div:last-child {
+        font-size: 30px;
+      }
+    }
+  }
+
+  .header {
+    margin: 20px 0;
+    width: 470px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .author {
+      text-underline-position: under;
+    }
 
     .btn {
       text-decoration: none;
       font-weight: bold;
-      margin: 1rem;
       padding: 0.5rem;
       background-color: #b4b6c2;
       border: 0;
@@ -21,8 +83,8 @@
       box-shadow: 0 0.3em #7b7d86;
       cursor: pointer;
       text-align: center;
-      width: 100px;
-  
+      width: 103px;
+
       &:active {
         top: 0.6em;
         box-shadow: 0 0 rgba(0, 0, 0, 0.4);
@@ -31,6 +93,7 @@
   }
 
   .tile-container {
+    position: relative;
     display: grid;
     grid-template-columns: auto auto auto auto;
     grid-gap: 15px;
@@ -39,7 +102,7 @@
     background-color: #b4b6c2;
     border: 15px solid #b4b6c2;
     border-radius: 5px;
-    
+
     .tile {
       background-color: rgba(255, 255, 255, 0.35);
       width: 100px;
@@ -51,50 +114,56 @@
       align-items: center;
       border-radius: 5px;
     }
-    
+
     .tile-2 {
       color: white;
       background-color: grey;
     }
-    
+
     .tile-4 {
       background-color: turquoise;
     }
-    
+
     .tile-8 {
       color: white;
       background-color: brown;
     }
-    
+
     .tile-16 {
       background-color: magenta;
     }
-    
+
     .tile-32 {
       background-color: yellow;
     }
-    
+
     .tile-64 {
       background-color: cyan;
     }
-    
+
     .tile-128 {
+      color: white;
       background-color: green;
     }
-    
+
     .tile-256 {
       background-color: orange;
     }
-    
+
     .tile-512 {
+      font-size: 50px;
       background-color: lime;
     }
-    
+
     .tile-1024 {
+      font-size: 40px;
+      color: white;
       background-color: navy;
     }
-    
+
     .tile-2048 {
+      font-size: 40px;
+      color: purple;
       background-color: pink;
     }
   }

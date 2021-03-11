@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.scss';
 
 function App() {
@@ -10,10 +10,17 @@ function App() {
   ];
 
   const [tiles, setTiles] = useState([...tilesDefault]);
+  const [score, setScore] = useState(0);
+  const winRef = useRef();
+  const loseRef = useRef();
 
   useEffect(() => {
     newGame();
   }, []);
+
+  useEffect(() => {
+    handleLose(tiles);
+  }, [tiles]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -23,6 +30,9 @@ function App() {
   });
 
   const handleKeyDown = (e) => {
+    if (winRef.current.classList.contains('end-game') || loseRef.current.classList.contains('end-game')) {
+      return;
+    }
     switch (e.key) {
       case 'ArrowUp':
         moveUp();
@@ -41,19 +51,81 @@ function App() {
     }
   };
 
+  const handleLose = (listTiles) => {
+    let status = true;
+    let preTile = 0;
+
+    const col0 = [listTiles[0][0], listTiles[1][0], listTiles[2][0], listTiles[3][0]];
+    const col1 = [listTiles[0][1], listTiles[1][1], listTiles[2][1], listTiles[3][1]];
+    const col2 = [listTiles[0][2], listTiles[1][2], listTiles[2][2], listTiles[3][2]];
+    const col3 = [listTiles[0][3], listTiles[1][3], listTiles[2][3], listTiles[3][3]];
+
+    const cols = [col0, col1, col2, col3];
+
+    cols.map(col => {
+      preTile = 0;
+      col.map(tile => {
+        if ((tile === preTile && tile !== 0) || tile === 0) {
+          status = false;
+        } else {
+          preTile = tile;
+        }
+        return null;
+      });
+      return null;
+    });
+
+    listTiles.map(row => {
+      preTile = 0;
+      row.map(tile => {
+        if ((tile === preTile && tile !== 0) || tile === 0) {
+          status = false;
+        } else {
+          preTile = tile;
+        }
+        return null;
+      });
+      return null;
+    });
+
+    if (status) {
+      loseRef.current.classList.add('end-game');
+    }
+  }
+
+  const handleWin = (listTiles) => {
+    listTiles.map(row => {
+      row.map(tile => {
+        if (tile === 2048) {
+          winRef.current.classList.add('end-game');
+        }
+        return null;
+      });
+      return null;
+    });
+  }
+
   const newGame = () => {
-    setTiles(tilesDefault);
+    winRef.current.classList.remove('end-game');
+    loseRef.current.classList.remove('end-game');
     randomTile(tilesDefault);
     randomTile(tilesDefault);
   };
 
   const randomTile = (listTiles = tiles) => {
+    if (winRef.current.classList.contains('end-game') || loseRef.current.classList.contains('end-game')) {
+      return;
+    }
     const tilesEmpty = getTilesEmpty(listTiles);
-    const newNumber = Math.random() > 0.9 && tilesEmpty.length !== 16 ? 4 : 2;
+    const newNumber = Math.random() > 0.95 && tilesEmpty.length !== 16 ? 4 : 2;
     const newTile = tilesEmpty[Math.floor(Math.random() * tilesEmpty.length)];
     let newTiles = [...listTiles];
-    newTiles[newTile.row][newTile.tile] = newNumber;
-    setTiles(newTiles);
+    if (newTile) {
+      newTiles[newTile.row][newTile.tile] = newNumber;
+      setTiles(newTiles);
+    } else {
+      setTiles(listTiles);
+    }
   };
 
   const getTilesEmpty = (listTiles) => {
@@ -67,6 +139,7 @@ function App() {
       });
       return null;
     });
+
     return tilesEmpty;
   };
 
@@ -80,7 +153,10 @@ function App() {
     }
 
     newArr.map((tile, index) => {
-      if (canMerged && (index + 1 <= newArr.length - 1) &&(newArr[index] === newArr[index + 1] || newArr[index] === 0 || newArr[index + 1] === 0)) {
+      if (canMerged && (index + 1 <= newArr.length - 1) && (newArr[index] === newArr[index + 1] || newArr[index] === 0 || newArr[index + 1] === 0)) {
+        if (newArr[index] > 0 && newArr[index + 1] > 0) {
+          setScore(score + newArr[index] + newArr[index + 1]);
+        }
         _newArr[index] = newArr[index] + newArr[index + 1];
         newArr[index + 1] = 0;
         canMerged = false;
@@ -117,7 +193,7 @@ function App() {
     newTiles[2] = [col0[2], col1[2], col2[2], col3[2]];
     newTiles[3] = [col0[3], col1[3], col2[3], col3[3]];
 
-    setTiles(newTiles);
+    handleWin(newTiles);
     randomTile(newTiles);
   };
 
@@ -129,7 +205,7 @@ function App() {
     newTiles[2] = merge([newTiles[2][0], newTiles[2][1], newTiles[2][2], newTiles[2][3]], true);
     newTiles[3] = merge([newTiles[3][0], newTiles[3][1], newTiles[3][2], newTiles[3][3]], true);
 
-    setTiles(newTiles);
+    handleWin(newTiles);
     randomTile(newTiles);
   };
 
@@ -146,7 +222,7 @@ function App() {
     newTiles[2] = [col0[2], col1[2], col2[2], col3[2]];
     newTiles[3] = [col0[3], col1[3], col2[3], col3[3]];
 
-    setTiles(newTiles);
+    handleWin(newTiles);
     randomTile(newTiles);
   };
 
@@ -158,13 +234,21 @@ function App() {
     newTiles[2] = merge([newTiles[2][0], newTiles[2][1], newTiles[2][2], newTiles[2][3]]);
     newTiles[3] = merge([newTiles[3][0], newTiles[3][1], newTiles[3][2], newTiles[3][3]]);
 
-    setTiles(newTiles);
+    handleWin(newTiles);
     randomTile(newTiles);
   };
 
   return (
     <div className="app">
-      <div className="btn-container">
+      <div className="name">
+        <div className="name-game">2048</div>
+        <div className="score">
+          <div>Score</div>
+          <div>{score}</div>
+        </div>
+      </div>
+      <div className="header">
+        <div className="author">Created by <strong><u>Nguyen Huu Yen</u></strong>.</div>
         <div className="btn" onClick={() => newGame()}>New Game</div>
       </div>
       <div className="tile-container">
@@ -188,6 +272,11 @@ function App() {
         <div id="position-31" className={`tile ${tiles[3][1] ? 'tile-' + tiles[3][1] : ''}`}>{tiles[3][1] ? tiles[3][1] : ''}</div>
         <div id="position-32" className={`tile ${tiles[3][2] ? 'tile-' + tiles[3][2] : ''}`}>{tiles[3][2] ? tiles[3][2] : ''}</div>
         <div id="position-33" className={`tile ${tiles[3][3] ? 'tile-' + tiles[3][3] : ''}`}>{tiles[3][3] ? tiles[3][3] : ''}</div>
+        <div className="win" ref={winRef}>Win !!</div>
+        <div className="lose" ref={loseRef}>Lose :((</div>
+      </div>
+      <div className="description">
+        <strong>HOW TO PLAY:</strong> Use your <strong>arrow keys</strong> to move the tiles. Tiles with the same number <strong>merge into one</strong> when they touch. Add them up to reach <strong>2048!</strong>
       </div>
     </div>
   );
